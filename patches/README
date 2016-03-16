@@ -1,0 +1,35 @@
+A series of optional patches for other open source software you may
+find useful.
+
+gnupg-2.0.27-pkcs11_reader_match.patch
+
+	Allows for strncmp() like substring reader match.
+	Submitted upstream.
+
+gnupg-2.0.27-scd_shared.patch
+
+	Changes exclusive reader access to shared reader access and lock.
+	You must not use gpg-agent when using this patch as gpg-agent
+	will keep scdaemon running all the time which still breaks
+	shared device usage.
+	Look e.g. into 'kwalletcli' for a way to keep your sanity
+	when it comes to gpg pin entry.
+
+opensc-0.14.0-allowed_readers.patch
+
+	Add an 'allowed_readers' option (same styles as the already
+	existing 'ignored_readers') to opensc-pkcs11.so.
+	Submitted upstream.
+
+openssh-6.8p1-key_select.patch
+
+	Enable key selection in the style of <key-number>@<provider>
+	for openssh. Note that this patch is authored by somebody
+	else (see comment at top of patch file).
+	For the Yubikey piv applet, key-numbers are:
+
+	9A	01@	(tested)
+	9C	02@	(guess)
+	9D	03@	(tested)
+	9E	04@	(guess)
+

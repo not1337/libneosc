@@ -1,0 +1,45 @@
+.TH NEOSC_USB_READ_STATUS 3  2015-04-10 "" ""
+.SH NAME
+neosc_usb_read_status \- fetch YubiKey NEO applet status information
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "int neosc_usb_read_status(void *handle, NEOSC_STATUS *status);"
+.SH DESCRIPTION
+The
+.BR neosc_usb_read_status()
+function returns current status information of the YubiKey.
+.in +4n
+.nf
+
+typedef struct
+{
+        int major;
+        int minor;
+        int build;
+        int pgmseq;
+        int touchlevel;
+        int config1;
+        int config2;
+        int touch1;
+        int touch2;
+        int ledinv;
+} NEOSC_STATUS;
+.in
+.fi
+.PP
+major, minor and build refer to the YubiKey version. pgmseq is the current programming sequence number. touchlevel is the current button touch level. config1 and config2 are non-zero if there is valid configuration for slot 1 or slot 2. touch1 and touch2 are non-zero if slot1 or slot2 require button touching. ledinv is non-zero if the LED behaviour is inverted.
+.SH RETURN VALUE
+The
+.BR neosc_usb_read_status()
+function returns zero in case of success and -1 in case of any error.
+.SH SEE ALSO
+.BR neosc_usb_open (3)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

@@ -1,0 +1,4 @@
+For all patches included the license to be applied is the license of the
+software package being patched. All patches included except the openssh
+patch are (C) 2015 Andreas Steinmetz, ast@domdv.de.
+For the openssh patch see the link included in the patch file.

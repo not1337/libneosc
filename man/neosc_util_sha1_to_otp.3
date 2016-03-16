@@ -1,0 +1,26 @@
+.TH NEOSC_UTIL_SHA1_TO_OTP 3  2015-04-10 "" ""
+.SH NAME
+neosc_util_sha1_to_otp \-  convert an SHA1 hash to an OATH integer value
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "int neosc_util_sha1_to_otp(unsigned char *in, int ilen,"
+.BI "                           int digits, int *out);"
+.SH DESCRIPTION
+The
+.BR neosc_util_sha1_to_otp()
+function converts an SHA1 hash to an OATH integer value. The input length must be at least NEOSC_SHA1_SIZE. The amount of digits may be 6, 7 or 8. The resulting value is stored in the location to which "out" points to.
+.SH RETURN VALUE
+The
+.BR neosc_util_sha1_to_otp()
+function returns zero in case of success and -1 in case of any error.
+.SH SEE ALSO
+.BR neosc_util_time_to_array (3)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

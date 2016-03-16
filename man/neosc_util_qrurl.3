@@ -1,0 +1,30 @@
+.TH NEOSC_UTIL_QRURL 3  2015-04-10 "" ""
+.SH NAME
+neosc_util_qrurl \- create an url suitable for qrencode
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "int neosc_util_qrurl(char *name, int otpmode, int shamode,"
+.BI "                     int digits, unsigned int counter,"
+.BI "                     unsigned char *secret, int slen,"
+.BI "                     char *out, int olen);"
+.SH DESCRIPTION
+The
+.BR neosc_util_qrurl()
+function creates an url suitable as input to qrencode from the given parameters and writes it to the output buffer. The buffer must be large enough to holt the resulting url string.
+.sp
+otpmode is either NEOSC_OATH_HOTP or NEOSC_OATH_TOTP. shamode is either NEOSC_OATH_SHA1 or NEOSC_OATH_SHA256. counter is the IMF value for HOTP (typically 0). secret is the secret HMAC value with a length of either NEOSC_SHA1_SIZE or NEOSC_SHA256_SIZE depending on the shamode selected.
+.SH RETURN VALUE
+The
+.BR neosc_util_qrurl()
+function returns zero in case of success and -1 in case of any error.
+.SH SEE ALSO
+.BR qrencode (1)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

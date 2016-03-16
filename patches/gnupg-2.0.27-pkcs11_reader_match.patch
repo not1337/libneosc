@@ -1,0 +1,54 @@
+diff -rNu gnupg-2.0.27.orig/scd/apdu.c gnupg-2.0.27/scd/apdu.c
+--- gnupg-2.0.27.orig/scd/apdu.c	2015-02-17 15:00:57.000000000 +0100
++++ gnupg-2.0.27/scd/apdu.c	2015-03-21 19:36:12.159632498 +0100
+@@ -1866,6 +1866,7 @@
+   long err;
+   int slot;
+   char *list = NULL;
++  char *m = NULL;
+   pcsc_dword_t nreader, listlen;
+   char *p;
+ 
+@@ -1926,10 +1927,15 @@
+           log_error ("invalid response from pcsc_list_readers\n");
+           break;
+         }
++      if (!m && portstr && *portstr && !strncmp (p, portstr, strlen (portstr)))
++        m = p;
+       nreader -= strlen (p)+1;
+       p += strlen (p) + 1;
+     }
+ 
++  if (m)
++    portstr = m;
++
+   reader_table[slot].rdrname = xtrymalloc (strlen (portstr? portstr : list)+1);
+   if (!reader_table[slot].rdrname)
+     {
+diff -rNu gnupg-2.0.27.orig/scd/pcsc-wrapper.c gnupg-2.0.27/scd/pcsc-wrapper.c
+--- gnupg-2.0.27.orig/scd/pcsc-wrapper.c	2015-02-17 15:00:57.000000000 +0100
++++ gnupg-2.0.27/scd/pcsc-wrapper.c	2015-03-21 19:29:35.033075790 +0100
+@@ -408,6 +408,7 @@
+   long err;
+   const char * portstr;
+   char *list = NULL;
++  char *m = NULL;
+   pcsc_dword_t nreader, atrlen;
+   char *p;
+   pcsc_dword_t card_state, card_protocol;
+@@ -466,10 +467,15 @@
+           fprintf (stderr, PGM": invalid response from pcsc_list_readers\n");
+           break;
+         }
++      if (!m && portstr && *portstr && !strncmp (p, portstr, strlen (portstr)))
++        m = p;
+       nreader -= strlen (p)+1;
+       p += strlen (p) + 1;
+     }
+ 
++  if (m)
++    portstr = m;
++
+   current_rdrname = malloc (strlen (portstr && *portstr? portstr:list)+1);
+   if (!current_rdrname)
+     {

@@ -1,0 +1,26 @@
+.TH NEOSC_UTIL_HEX_ENCODE 3  2015-04-10 "" ""
+.SH NAME
+neosc_util_hex_encode \- encode data to hexadecimal string
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "int neosc_util_hex_encode(unsigned char *in, int ilen,"
+.BI "                          char *out, int *olen);"
+.SH DESCRIPTION
+The
+.BR neosc_util_hex_encode()
+function encodes data to a hexadecimal string. The output buffer length must be at least twice as large as the input length plus an additional byte. The "olen" parameter must contain the output buffer size on input and contains the actual output length minus the terminating zero on function return.
+.SH RETURN VALUE
+The
+.BR neosc_util_hex_encode()
+function returns zero in case of success and -1 in case of any error.
+.SH SEE ALSO
+.BR neosc_util_hex_decode (3)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

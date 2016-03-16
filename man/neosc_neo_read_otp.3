@@ -1,0 +1,27 @@
+.TH NEOSC_NEO_READ_OTP 3  2015-04-10 "" ""
+.SH NAME
+neosc_neo_read_otp \- calculate Yubico OTP
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "int neosc_neo_read_otp(void *ctx, int slot, unsigned char *in,"
+.BI "                       int ilen, unsigned char *out, int olen);"
+.SH DESCRIPTION
+The
+.BR neosc_neo_read_otp()
+function calculates the resulting Yubico OTP value from the given 6 bytes of input. slot must be either 0 or 1 for slot 1 or slot 2. The resulting Yubico OTP is stored at the location pointed to by out which must be at least of 16 bytes length.
+.SH RETURN VALUE
+The
+.BR neosc_neo_read_otp()
+function returns zero in case of success and -1 in case of any error.
+.SH SEE ALSO
+.BR neosc_neo_select (3),
+.BR neosc_pcsc_open (3)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

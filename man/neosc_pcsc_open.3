@@ -1,0 +1,25 @@
+.TH NEOSC_PCSC_OPEN 3  2015-04-10 "" ""
+.SH NAME
+neosc_pcsc_open \- open connection to YubiKey via CCID
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "int neosc_pcsc_open(void **ctx, int serial);"
+.SH DESCRIPTION
+The
+.BR neosc_pcsc_open()
+function opens a connection to a YubiKey via CCID. ctx will contain an opaque handle on function return. serial is either the YubiKey serial number or one of NEOSC_ANY_YUBIKEY, NEOSC_USB_YUBIKEY (usb attached YubiKey without visible serial number) or NEOSC_NFC_YUBIKEY (YubiKey on a contactless reader).
+.SH RETURN VALUE
+The
+.BR neosc_pcsc_open()
+function returns zero in case of success and -1 in case of any error.
+.SH SEE ALSO
+.BR neosc_pcsc_close (3)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

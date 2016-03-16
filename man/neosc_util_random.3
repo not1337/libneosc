@@ -1,0 +1,23 @@
+.TH NEOSC_UTIL_RANDOM 3  2015-04-10 "" ""
+.SH NAME
+neosc_util_random \- get random data
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "neosc_util_random(unsigned char *out, int olen);"
+.SH DESCRIPTION
+The
+.BR neosc_util_random()
+function returns the amount of random data requested. On linux it uses "/dev/urandom" as the random data source.
+.SH RETURN VALUE
+The
+.BR neosc_util_random()
+function returns zero in case of success and -1 in case of any error.
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

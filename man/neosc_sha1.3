@@ -1,0 +1,24 @@
+.TH NEOSC_SHA1 3  2015-04-10 "" ""
+.SH NAME
+neosc_sha1 \- create SHA1 hash
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "void neosc_sha1(unsigned char *data, unsigned int length,"
+.BI "                unsigned char *result);"
+.SH DESCRIPTION
+The
+.BR neosc_sha1()
+function creates a SHA1 hash from the given data of specified length and returns the resulting SHA1 hash at the address result points to. There must be room for at least NEOSC_SHA1_SIZE bytes.
+.SH SEE ALSO
+.BR neosc_sha1init (3),
+.BR neosc_sha1next (3),
+.BR neosc_sha1end (3)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

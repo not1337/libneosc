@@ -1,0 +1,20 @@
+.TH NEOSC_PBKDFf2 3  2015-04-10 "" ""
+.SH NAME
+neosc_pbkdf2 \- Password-Based Key Derivation Function 2
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "void neosc_pbkdf2(char *pass, unsigned char *salt, int slen,"
+.BI "                  int iterations, unsigned char *out, int olen);"
+.SH DESCRIPTION
+The
+.BR neosc_pbkdf2()
+function is an implementation of the Password-Based Key Derivation Function 2 (see RFC2898). Note that this is a low level function which typically will not be required directly by an application. pass is the password input, salt is slen bytes of cryptographic salt, iterations is the amount of iterations desired and out is an olen sized buffer of typically NEOSC_SHA1_SIZE length the result is returned to. This implementation uses HMAC-SHA1 as the pseudorandom function.
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

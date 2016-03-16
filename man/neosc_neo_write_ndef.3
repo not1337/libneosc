@@ -1,0 +1,27 @@
+.TH NEOSC_NEO_WRITE_NDEF 3  2015-04-10 "" ""
+.SH NAME
+neosc_neo_write_ndef \- configure YubiKey NDEF message
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "int neosc_neo_write_ndef(void *ctx, int slot, char *url, char *txt,"
+.BI "                         char *lang, unsigned char *code, int codelen);"
+.SH DESCRIPTION
+The
+.BR neosc_neo_write_ndef()
+function configures the NDEF message presented on the YubiKey NFC interface. slot must be 0 or 1 to associate the NDEF message with slot 1 or slot 2. Either url or txt must not be NULL, the other must be NULL. If txt is not NULL lang must be not NULL, too. If url is not NULL it points to the url message to be configured. If txt is not null it points to the text message to be configured and lang points to the language code (e.g. en-US) to be used. If code is not NULL it points to the 6 byte configuration access code.
+.SH RETURN VALUE
+The
+.BR neosc_neo_write_ndef()
+function returns zero in case of success and -1 in case of any error.
+.SH SEE ALSO
+.BR neosc_neo_select (3),
+.BR neosc_pcsc_open (3)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

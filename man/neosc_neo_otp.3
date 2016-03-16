@@ -1,0 +1,30 @@
+.TH NEOSC_NEO_OTP 3  2015-04-10 "" ""
+.SH NAME
+neosc_neo_otp \- configure Yubico challenge response
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "int neosc_neo_otp(void *ctx, int slot, unsigned char *privid,"
+.BI "                  int privlen, unsigned char *aesdata, int aeslen,"
+.BI "                  int tktflags, int cfgflags, int extflags,"
+.BI "                  unsigned char *newcode, int newlen,"
+.BI "                  unsigned char *code, int codelen);"
+.SH DESCRIPTION
+The
+.BR neosc_neo_otp()
+function configures the Yubico challenge response for the selected YubiKey slot. slot must be 0 or 1 for slot 1 or slot 2. if privid is not NULL it points to the 6 byte private id. aesdata points to the 16 byte secret. tktflags may be 0 or NEOSC_TKT_PROTECT2, cfgflags may be 0 or NEOSC_CFG_OTP_BTN. extflags may be any valid combination of the global extended flags. If newcode is not NULL it points to the new 6 byte configuration access code. If code is not NULL it points to the current 6 byte configuration access code.
+.SH RETURN VALUE
+The
+.BR neosc_neo_otp()
+function returns zero in case of success and -1 in case of any error.
+.SH SEE ALSO
+.BR neosc_neo_select (3),
+.BR neosc_pcsc_open (3)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

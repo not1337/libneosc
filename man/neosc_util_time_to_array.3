@@ -1,0 +1,25 @@
+.TH NEOSC_UTIL_TIME_TO_ARRAY 3  2015-04-10 "" ""
+.SH NAME
+neosc_util_time_to_array \- convert time to OATH compliant data
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "int neosc_util_time_to_array(time_t time,unsigned char *out,int olen);"
+.SH DESCRIPTION
+The 
+.BR neosc_util_time_to_array()
+function converts the given time to an OATH compliant data array. The output length must be at least 8 bytes. Note that this function behaves the same an actual YubiKey OATH applet for compatability.
+.SH RETURN VALUE
+The
+.BR neosc_util_time_to_array()
+function returns zero in case of success and -1 in case of any error.
+.SH SEE ALSO
+.BR neosc_util_sha1_to_otp (3)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

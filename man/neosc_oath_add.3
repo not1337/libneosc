@@ -1,0 +1,29 @@
+.TH NEOSC_OATH_ADD 3  2015-04-10 "" ""
+.SH NAME
+neosc_oath_add \- add or change a YubiKey OATH applet entry
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "int neosc_oath_add(void *ctx, char *name, int otpmode, int shamode,"
+.BI "                   int digits, unsigned int counter,"
+.BI "                   unsigned char *secret, int slen);"
+.SH DESCRIPTION
+The
+.BR neosc_oath_add()
+function adds or changes any exising OATH entry as specified by name (UTF8). otpmode must be either NEOSC_OATH_HOTP or NEOSC_OATH_TOTP, shamode must be either NEOSC_OATH_SHA1 or NEOSC_OATH_SHA256, digits must be any of 6, 7 or 8, counter is the IMF for HOTP (typically 0) and secret is the HMAC secret of NEOSC_SHA1_SIZE or NEOSC_SHA256_SIZE depending on the shamode value.
+.SH RETURN VALUE
+The
+.BR neosc_oath_add()
+function returns zero in case of success and -1 in case of any error.
+.SH SEE ALSO
+.BR neosc_oath_select (3),
+.BR neosc_oath_unlock (3),
+.BR neosc_pcsc_open (3)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

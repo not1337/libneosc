@@ -1,0 +1,43 @@
+.TH NEOSC_NEO_SETMODE 3  2015-04-10 "" ""
+.SH NAME
+neosc_neo_setmode \- set YubiKey operation mode
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "int neosc_neo_setmode(void *ctx, int mode, int crtimeout,"
+.BI "                      int autoejecttime);"
+.SH DESCRIPTION
+The
+.BR neosc_neo_setmode()
+function sets the operation mode as well as the challenge response timeout (in seconds) and the autoeject time (x10 seconds). Valid operation modes are:
+.in +4n
+.nf
+
+#define NEOSC_MODE_OTP          0x00
+#define NEOSC_MODE_CCID         0x01
+#define NEOSC_MODE_OTP_CCID     0x02
+#define NEOSC_MODE_U2F          0x03 /* danger! */
+#define NEOSC_MODE_OTP_U2F      0x04
+#define NEOSC_MODE_U2F_CCID     0x05
+#define NEOSC_MODE_OTP_U2F_CCID 0x06
+.in
+.fi
+.SH RETURN VALUE
+The
+.BR neosc_neo_setmode()
+function returns zero in case of success and -1 in case of any error.
+.SH CAVEATS
+Do not configure NEOSC_MODE_U2F (0x03). You will need a PCSC compatible NFC reader to exit this mode if you configure a YubiKey NEO to this mode. As the YubiKey NEO-N does not have a NFC interface it is quite probable that you are stuck in U2F only mode and have bricked your YubiKey.
+.sp
+You have been warned. Be careful when calling this function.
+.SH SEE ALSO
+.BR neosc_neo_select (3),
+.BR neosc_pcsc_open (3)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

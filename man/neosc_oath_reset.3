@@ -1,0 +1,25 @@
+.TH NEOSC_OATH_RESET 3  2015-04-10 "" ""
+.SH NAME
+neosc_oath_reset \- reset the YubiKey OATH applet
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "int neosc_oath_reset(void *ctx);"
+.SH DESCRIPTION
+The
+.BR neosc_oath_reset()
+function completely resets the YubiKey OATH applet. Any password protection as well all OATH entries are cleared.
+.SH RETURN VALUE
+The
+.BR neosc_oath_reset()
+function returns zero in case of success and -1 in case of any error.
+.SH SEE ALSO
+.BR neosc_pcsc_open (3),
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

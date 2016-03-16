@@ -1,0 +1,25 @@
+.TH NEOSC_NDEF_SELECT 3  2015-04-10 "" ""
+.SH NAME
+neosc_ndef_select \- activate the YubiKey NDEF applet
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "int neosc_ndef_select(void *ctx);"
+.SH DESCRIPTION
+The
+.BR neosc_ndef_select()
+function activates the YubiKey NDEF applet by sending an APDU with the proper AID to the CCID attached Yubikey.
+.SH RETURN VALUE
+The
+.BR neosc_ndef_select()
+function returns zero in case of success and -1 in case of any error.
+.SH SEE ALSO
+.BR neosc_pcsc_open (3)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

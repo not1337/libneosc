@@ -1,0 +1,29 @@
+.TH NEOSC_NEO_HMAC 3  2015-04-10 "" ""
+.SH NAME
+neosc_neo_hmac \- configure YubiKey HMAC SHA1 challenge response
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "int neosc_neo_hmac(void *ctx, int slot, unsigned char *aesdata,"
+.BI "                   int aeslen, int tktflags, int cfgflags,"
+.BI "                   int extflags, unsigned char *newcode, int newlen,"
+.BI "                   unsigned char *code,int codelen);"
+.SH DESCRIPTION
+The
+.BR neosc_neo_hmac()
+function configures the YubiKey HMAC SHA1 challenge response. slot must be 0 or 1 for slot 1 or slot 2. aesdata points to the 20 byte HMAC secret. tktflags may be 0 or NEOSC_TKT_PROTECT2, cfgflags may be 0 or any combination of NEOSC_CFG_HMAC_063 and NEOSC_CFG_HMAC_BTN. extflags may be any valid combination of the global extended flags. If newcode is not NULL it points to the new 6 byte configuration access code. If code is not NULL it points to the current 6 byte configuration access code.
+.SH RETURN VALUE
+The
+.BR neosc_neo_hmac()
+function returns zero in case of success and -1 in case of any error.
+.SH SEE ALSO
+.BR neosc_neo_select (3),
+.BR neosc_pcsc_open (3)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

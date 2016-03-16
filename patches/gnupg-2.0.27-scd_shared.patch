@@ -1,0 +1,122 @@
+Important:
+After applying this patch you *MUST NOT* run 'gpg-agent --daemon'!!!!!
+
+--- a/scd/apdu.c	2015-03-22 01:33:13.152560658 +0100
++++ b/scd/apdu.c	2015-03-22 01:42:54.782377798 +0100
+@@ -1513,7 +1513,7 @@
+ 
+   err = pcsc_connect (reader_table[slot].pcsc.context,
+                       reader_table[slot].rdrname,
+-                      PCSC_SHARE_EXCLUSIVE,
++                      PCSC_SHARE_SHARED,
+                       PCSC_PROTOCOL_T0|PCSC_PROTOCOL_T1,
+                       &reader_table[slot].pcsc.card,
+                       &reader_table[slot].pcsc.protocol);
+@@ -1526,6 +1526,18 @@
+     }
+   else
+     {
++      err = pcsc_begin_transaction (reader_table[slot].pcsc.card);
++      if (err)
++        {
++          pcsc_disconnect (reader_table[slot].pcsc.card, PCSC_LEAVE_CARD);
++          reader_table[slot].pcsc.card = 0;
++          log_error ("pcsc_begin_transaction failed: %s (0x%lx)\n",
++                   pcsc_error_string (err), err);
++        }
++    }
++
++  if (!err)
++    {
+       char reader[250];
+       pcsc_dword_t readerlen, atrlen;
+       long card_state, card_protocol;
+@@ -1574,6 +1586,7 @@
+   if (!reader_table[slot].pcsc.card)
+     return 0;
+ 
++  pcsc_end_transaction (reader_table[slot].pcsc.card, PCSC_LEAVE_CARD);
+   err = pcsc_disconnect (reader_table[slot].pcsc.card, PCSC_LEAVE_CARD);
+   if (err)
+     {
+--- a/scd/pcsc-wrapper.c	2015-03-22 01:32:09.472257525 +0100
++++ b/scd/pcsc-wrapper.c	2015-03-22 01:34:48.095043030 +0100
+@@ -487,7 +487,7 @@
+ 
+   err = pcsc_connect (pcsc_context,
+                       current_rdrname,
+-                      PCSC_SHARE_EXCLUSIVE,
++                      PCSC_SHARE_SHARED,
+                       PCSC_PROTOCOL_T0|PCSC_PROTOCOL_T1,
+                       &pcsc_card,
+                       &pcsc_protocol);
+@@ -507,6 +507,23 @@
+       request_failed (err);
+       return;
+     }
++  else
++    {
++      err = pcsc_begin_transaction (pcsc_card);
++      if (err)
++        {
++          fprintf (stderr, PGM": pcsc_begin_transaction failed: %s (0x%lx)\n",
++                   pcsc_error_string (err), err);
++          pcsc_disconnect (pcsc_card, PCSC_LEAVE_CARD);
++          pcsc_release_context (pcsc_context);
++          free (current_rdrname);
++          current_rdrname = NULL;
++          pcsc_card = 0;
++          pcsc_protocol = 0;
++          request_failed (err);
++          return;
++        }
++    }
+ 
+   current_atrlen = 0;
+   if (!err)
+@@ -559,6 +576,11 @@
+ 
+   free (current_rdrname);
+   current_rdrname = NULL;
++  if (pcsc_card)
++    {
++      pcsc_end_transaction (pcsc_card, PCSC_LEAVE_CARD);
++      pcsc_disconnect (pcsc_card, PCSC_LEAVE_CARD);
++    }
+   pcsc_release_context (pcsc_context);
+   pcsc_card = 0;
+   pcsc_protocol = 0;
+@@ -663,6 +685,7 @@
+ 
+   if (pcsc_card)
+     {
++      pcsc_end_transaction (pcsc_card, PCSC_LEAVE_CARD);
+       err = pcsc_disconnect (pcsc_card, PCSC_LEAVE_CARD);
+       if (err == 0x80100003)  /* Invalid handle.  (already disconnected) */
+         err = 0;
+@@ -678,7 +701,7 @@
+ 
+   err = pcsc_connect (pcsc_context,
+                       current_rdrname,
+-                      PCSC_SHARE_EXCLUSIVE,
++                      PCSC_SHARE_SHARED,
+                       PCSC_PROTOCOL_T0|PCSC_PROTOCOL_T1,
+                       &pcsc_card,
+                       &pcsc_protocol);
+@@ -691,6 +714,16 @@
+       return;
+     }
+ 
++  err = pcsc_begin_transaction (pcsc_card);
++  if (err)
++    {
++      fprintf (stderr, PGM": pcsc_begin_transaction failed: %s (0x%lx)\n",
++               pcsc_error_string (err), err);
++      pcsc_disconnect (pcsc_card, PCSC_LEAVE_CARD);
++      pcsc_card = 0;
++      request_failed (err);
++      return;
++    }
+ 
+   atrlen = 33;
+   nreader = sizeof reader - 1;

@@ -1,0 +1,24 @@
+.TH NEOSC_SHA1HMINIT 3  2015-04-10 "" ""
+.SH NAME
+neosc_sha1hminit \- initialize SHA1 HMAC
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "void neosc_sha1hminit(NEOSC_SHA1DATA *ptr, NEOSC_SHA1HMDATA *key);"
+.SH DESCRIPTION
+The
+.BR neosc_sha1hminit()
+function initializes the HMAC processing structure from the key data structure for subsequent use.
+.SH SEE ALSO
+.BR neosc_sha1hmkey (3),
+.BR neosc_sha1hmnext (3),
+.BR neosc_sha1hmend (3),
+.BR neosc_sha1hmac (3)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

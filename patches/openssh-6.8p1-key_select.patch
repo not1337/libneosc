@@ -1,0 +1,172 @@
+Based on:
+https://lists.mindrot.org/pipermail/openssh-unix-dev/2015-March/033684.html
+
+diff -rNu openssh-6.8p1.orig/ssh-pkcs11.c openssh-6.8p1/ssh-pkcs11.c
+--- openssh-6.8p1.orig/ssh-pkcs11.c	2015-03-17 06:49:20.000000000 +0100
++++ openssh-6.8p1/ssh-pkcs11.c	2015-03-22 11:57:36.932808663 +0100
+@@ -264,7 +264,7 @@
+ 		if (pin == NULL)
+ 			return (-1);	/* bail out */
+ 		rv = f->C_Login(si->session, CKU_USER,
+-		    (u_char *)pin, strlen(pin));
++		    (u_char *)pin, pin ? strlen(pin) : 0);
+ 		if (rv != CKR_OK && rv != CKR_USER_ALREADY_LOGGED_IN) {
+ 			free(pin);
+ 			error("C_Login failed: %lu", rv);
+@@ -278,7 +278,9 @@
+ 	/* try to find object w/CKA_SIGN first, retry w/o */
+ 	if (pkcs11_find(k11->provider, k11->slotidx, key_filter, 3, &obj) < 0 &&
+ 	    pkcs11_find(k11->provider, k11->slotidx, key_filter, 2, &obj) < 0) {
+-		error("cannot find private key");
++		char * hexid = tohex(k11->keyid,k11->keyid_len);
++		error("cannot find pkcs private key id %s",  hexid);
++		free(hexid);
+ 	} else if ((rv = f->C_SignInit(si->session, &mech, obj)) != CKR_OK) {
+ 		error("C_SignInit failed: %lu", rv);
+ 	} else {
+@@ -405,12 +407,14 @@
+ 	CK_ATTRIBUTE		pubkey_attribs[] = {
+ 		{ CKA_ID, NULL, 0 },
+ 		{ CKA_MODULUS, NULL, 0 },
+-		{ CKA_PUBLIC_EXPONENT, NULL, 0 }
++		{ CKA_PUBLIC_EXPONENT, NULL, 0 },
++		{ CKA_LABEL, NULL, 0 }
+ 	};
+ 	CK_ATTRIBUTE		cert_attribs[] = {
+ 		{ CKA_ID, NULL, 0 },
+ 		{ CKA_SUBJECT, NULL, 0 },
+-		{ CKA_VALUE, NULL, 0 }
++		{ CKA_VALUE, NULL, 0 },
++		{ CKA_LABEL, NULL, 0 }
+ 	};
+ 	pubkey_filter[0].pValue = &pubkey_class;
+ 	cert_filter[0].pValue = &cert_class;
+@@ -436,7 +440,7 @@
+ 
+ static int
+ pkcs11_fetch_keys_filter(struct pkcs11_provider *p, CK_ULONG slotidx,
+-    CK_ATTRIBUTE filter[], CK_ATTRIBUTE attribs[3],
++    CK_ATTRIBUTE filter[], CK_ATTRIBUTE attribs[4],
+     struct sshkey ***keysp, int *nkeys)
+ {
+ 	struct sshkey		*key;
+@@ -459,8 +463,8 @@
+ 		return (-1);
+ 	}
+ 	while (1) {
+-		/* XXX 3 attributes in attribs[] */
+-		for (i = 0; i < 3; i++) {
++		/* XXX 4 attributes in attribs[] */
++		for (i = 0; i < 4; i++) {
+ 			attribs[i].pValue = NULL;
+ 			attribs[i].ulValueLen = 0;
+ 		}
+@@ -468,26 +472,26 @@
+ 		    || nfound == 0)
+ 			break;
+ 		/* found a key, so figure out size of the attributes */
+-		if ((rv = f->C_GetAttributeValue(session, obj, attribs, 3))
++		if ((rv = f->C_GetAttributeValue(session, obj, attribs, 4))
+ 		    != CKR_OK) {
+ 			error("C_GetAttributeValue failed: %lu", rv);
+ 			continue;
+ 		}
+-		/* check that none of the attributes are zero length */
++		/* check that none of the attributes that matter are zero length */
+ 		if (attribs[0].ulValueLen == 0 ||
+ 		    attribs[1].ulValueLen == 0 ||
+ 		    attribs[2].ulValueLen == 0) {
+ 			continue;
+ 		}
+ 		/* allocate buffers for attributes */
+-		for (i = 0; i < 3; i++)
++		for (i = 0; i < 4; i++)
+ 			attribs[i].pValue = xmalloc(attribs[i].ulValueLen);
+ 		/*
+ 		 * retrieve ID, modulus and public exponent of RSA key,
+ 		 * or ID, subject and value for certificates.
+ 		 */
+ 		rsa = NULL;
+-		if ((rv = f->C_GetAttributeValue(session, obj, attribs, 3))
++		if ((rv = f->C_GetAttributeValue(session, obj, attribs, 4))
+ 		    != CKR_OK) {
+ 			error("C_GetAttributeValue failed: %lu", rv);
+ 		} else if (attribs[1].type == CKA_MODULUS ) {
+@@ -523,20 +527,40 @@
+ 			key->rsa = rsa;
+ 			key->type = KEY_RSA;
+ 			key->flags |= SSHKEY_FLAG_EXT;
++
++			char * hex = tohex(attribs[0].pValue, (int) attribs[0].ulValueLen);
++
++			char label[128 + 2 + 3 + 1] = "";
++			if (attribs[3].ulValueLen > 0) {
++				unsigned long len = MIN(128, attribs[3].ulValueLen);
++
++				strcat(label," <");
++				strncpy(label+2, attribs[3].pValue, len);
++				if (len == 128) 
++					strcat(label,"...");
++				strcat(label,">");
++			};
++
+ 			if (pkcs11_key_included(keysp, nkeys, key)) {
++				debug("Ignorng key  %s%s (%p), already included", hex, label, key);
+ 				sshkey_free(key);
++			}
++			else if (index(p->name,'@') && strncmp(hex,p->name,strlen(hex))) {
++				debug("Ignoring key  %s%s (%p), not explicitly listed", hex, label, key);
+ 			} else {
+ 				/* expand key array and add key */
+ 				*keysp = xrealloc(*keysp, *nkeys + 1,
+ 				    sizeof(struct sshkey *));
+ 				(*keysp)[*nkeys] = key;
+ 				*nkeys = *nkeys + 1;
+-				debug("have %d keys", *nkeys);
++
++				debug("Key %d: %s%s (%p)", *nkeys, hex, label, key);
+ 			}
++			free(hex);
+ 		} else if (rsa) {
+ 			RSA_free(rsa);
+ 		}
+-		for (i = 0; i < 3; i++)
++		for (i = 0; i < 4; i++)
+ 			free(attribs[i].pValue);
+ 	}
+ 	if ((rv = f->C_FindObjectsFinal(session)) != CKR_OK)
+@@ -556,14 +580,19 @@
+ 	CK_FUNCTION_LIST *f = NULL;
+ 	CK_TOKEN_INFO *token;
+ 	CK_ULONG i;
++	char *dll_filename = provider_id;
+ 
+ 	*keyp = NULL;
+ 	if (pkcs11_provider_lookup(provider_id) != NULL) {
+ 		error("provider already registered: %s", provider_id);
+ 		goto fail;
+ 	}
++
++	if (index(provider_id,'@'))
++		dll_filename = index(provider_id,'@') + 1;
++
+ 	/* open shared pkcs11-libarary */
+-	if ((handle = dlopen(provider_id, RTLD_NOW)) == NULL) {
++	if ((handle = dlopen(dll_filename, RTLD_NOW)) == NULL) {
+ 		error("dlopen %s failed: %s", provider_id, dlerror());
+ 		goto fail;
+ 	}
+diff -rNu openssh-6.8p1.orig/sshconnect2.c openssh-6.8p1/sshconnect2.c
+--- openssh-6.8p1.orig/sshconnect2.c	2015-03-17 06:49:20.000000000 +0100
++++ openssh-6.8p1/sshconnect2.c	2015-03-22 11:54:45.240114432 +0100
+@@ -1338,8 +1338,8 @@
+ 				debug("Skipped %s key %s for RSA/MD5 server",
+ 				    key_type(id->key), id->filename);
+ 			} else if (id->key->type != KEY_RSA1) {
+-				debug("Offering %s public key: %s",
+-				    key_type(id->key), id->filename);
++				debug("Offering %s public key: %s (%p)",
++				    key_type(id->key), id->filename, id->key);
+ 				sent = send_pubkey_test(authctxt, id);
+ 			}
+ 		} else {

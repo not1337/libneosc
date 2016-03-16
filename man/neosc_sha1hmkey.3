@@ -1,0 +1,25 @@
+.TH NEOSC_SHA1HMKEY 3  2015-04-10 "" ""
+.SH NAME
+neosc_sha1hmkey \- derive HMAC key structure from key data
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "void neosc_sha1hmkey(unsigned char *key,unsigned int keylength,"
+.BI "                     NEOSC_SHA1HMDATA *ptr);"
+.SH DESCRIPTION
+The
+.BR neosc_sha1hmkey()
+function derives the internal HMAC structure from the given key data of specified length.
+.SH SEE ALSO
+.BR neosc_sha1hminit (3),
+.BR neosc_sha1hmnext (3),
+.BR neosc_sha1hmend (3),
+.BR neosc_sha1hmac (3)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

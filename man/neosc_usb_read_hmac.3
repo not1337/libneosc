@@ -1,0 +1,26 @@
+.TH NEOSC_USB_READ_HMAC 3  2015-04-10 "" ""
+.SH NAME
+neosc_usb_read_hmac \- calculate SHA1 HMAC
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "int neosc_usb_read_hmac(void *handle, int slot, unsigned char *in,"
+.BI "                        int ilen, unsigned char *out, int olen);"
+.SH DESCRIPTION
+The
+.BR neosc_usb_read_hmac()
+function calculates the resulting SHA1 HMAC value from the given input. The input length must be either 1-63 bytes or 64 bytes depending on the HMAC configuration option used. slot must be either 0 or 1 for slot 1 or slot 2. The resulting HMAC is stored at the location pointed to by out which must be at least of NEOSC_SHA1_SIZE length.
+.SH RETURN VALUE
+The
+.BR neosc_usb_read_hmac()
+function returns zero in case of success and -1 in case of any error.
+.SH SEE ALSO
+.BR neosc_usb_open (3)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

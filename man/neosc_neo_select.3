@@ -1,0 +1,50 @@
+.TH NEOSC_NEO_SELECT 3  2015-04-10 "" ""
+.SH NAME
+neosc_neo_select \- activate the YubiKey NEO applet
+.SH SYNOPSIS
+.nf
+.B #include <libneosc.h>
+.sp
+.BI "int neosc_neo_select(void *ctx, NEOSC_NEO_INFO *info);"
+.SH DESCRIPTION
+The
+.BR neosc_neo_select()
+function activates the YubiKey NEO applet by sending an APDU with the proper AID to the CCID attached Yubikey. If info is not NULL additional information is returned.
+.in +4n
+.nf
+
+typedef struct
+{
+        int major;
+        int minor;
+        int build;
+        int pgmseq;
+        int touchlevel;
+        int mode;
+        int crtimeout;
+        int autoejecttime;
+        int config1;
+        int config2;
+        int touch1;
+        int touch2;
+        int ledinv;
+} NEOSC_NEO_INFO;
+.in
+.fi
+.PP
+major, minor and build refer to the NEO applet version. pgmseq is the current programming sequence number. touchlevel is the current button touch level (see BUGS) and mode is the current YubiKey configuration mode. crtimeout is the challenge response timeout in seconds and autoejecttime is the auto eject time (x10 seconds). config1 and config2 are non-zero if there is valid configuration for slot 1 or slot 2. touch1 and touch2 are non-zero if slot1 or slot2 require button touching. ledinv is non-zero if the LED behaviour is inverted.
+.SH RETURN VALUE
+The
+.BR neosc_neo_select()
+function returns zero in case of success and -1 in case of any error.
+.SH BUGS
+You can't read the actual button touch level through the NEO applet due to a YubiKey bug for certain NEO applet versions.
+.SH SEE ALSO
+.BR neosc_pcsc_open (3)
+.SH AUTHOR
+Written by Andreas Steinmetz
+.SH COPYRIGHT
+Copyright \(co 2015 Andreas Steinmetz
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
