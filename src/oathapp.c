@@ -28,7 +28,7 @@
 
 static unsigned char sel_oath[]=
 {
-	0x00,0xA4,0x04,0x00,0x07,0xa0,0x00,0x00,0x05,0x27,0x21,0x01
+	0x00,0xA4,0x04,0x00,0x08,0xa0,0x00,0x00,0x05,0x27,0x21,0x01,0x01
 };
 
 static unsigned char list_cmd[]=
@@ -79,7 +79,7 @@ static unsigned char reset_cmd[]=
 int neosc_oath_select(void *ctx,NEOSC_OATH_INFO *info)
 {
 	int status;
-	unsigned char bfr[25];
+	unsigned char bfr[28];
 	int len=sizeof(bfr);
 
 	if(!ctx)return -1;
@@ -88,7 +88,13 @@ int neosc_oath_select(void *ctx,NEOSC_OATH_INFO *info)
 		status!=0x9000||len<15)return -1;
 
 	if(bfr[0]!=0x79||bfr[1]!=0x03||bfr[5]!=0x71||bfr[6]!=0x08)return -1;
-	if(len>15)if(len!=25||bfr[15]!=0x74||bfr[16]!=0x08)return -1;
+	if(len>15)switch(len)
+	{
+	case 28:if(bfr[25]!=0x7b||bfr[26]!=0x01)return -1;
+	case 25:if(bfr[15]!=0x74||bfr[16]!=0x08)return -1;
+		break;
+	default:return -1;
+	}
 	if(info)
 	{
 		info->major=bfr[2];
