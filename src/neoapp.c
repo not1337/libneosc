@@ -1,5 +1,5 @@
 /* 
- * libneosc - an easy access library to the YubiKey NEO(-N)
+ * libneosc - an easy access library to the YubiKey NEO(-N)/4 (nano)
  *
  * Copyright (c) 2015 Andreas Steinmetz, ast@domdv.de
  *
@@ -29,6 +29,11 @@
 static unsigned char sel_neo[]=
 {
 	0x00,0xA4,0x04,0x00,0x07,0xA0,0x00,0x00,0x05,0x27,0x20,0x01
+};
+
+static unsigned char sel_mgr[]=
+{
+	0x00,0xA4,0x04,0x00,0x08,0xA0,0x00,0x00,0x05,0x27,0x47,0x11,0x17
 };
 
 static unsigned char set_config[]=
@@ -71,9 +76,21 @@ static unsigned char get_serial[]=
 	0x00,0x01,0x10,0x00
 };
 
+#if 0
+static unsigned char get_caps_mgr[]=
+{
+	0x00,0x1D,0x00,0x00
+};
+#endif
+
 static unsigned char set_mode[]=
 {
 	0x00,0x01,0x11,0x00
+};
+
+static unsigned char set_mode_mgr[]=
+{
+	0x00,0x16,0x11,0x00
 };
 
 static unsigned char set_scanmap[]=
@@ -167,6 +184,17 @@ int neosc_neo_select(void *ctx,NEOSC_NEO_INFO *info)
 		info->ledinv=(info->touchlevel&0x10)?1:0;
 		info->touchlevel&=~0x1f;
 	}
+	return 0;
+}
+
+int neosc_neo_select_mgr(void *ctx)
+{
+	int status;
+
+	if(!ctx)return -1;
+
+	if(neosc_pcsc_apdu(ctx,sel_mgr,sizeof(sel_mgr),NULL,NULL,&status)||
+		status!=0x9000)return -1;
 	return 0;
 }
 
@@ -432,6 +460,49 @@ repeat:	if(neosc_neo_read_status(ctx,&state))
 	seq=state.pgmseq;
 
 	memcpy(bfr,set_mode,sizeof(set_mode));
+	bfr[sizeof(set_mode)]=0x04;
+	bfr[sizeof(set_mode)+1]=(unsigned char)mode;
+	bfr[sizeof(set_mode)+2]=(unsigned char)crtimeout;
+	bfr[sizeof(set_mode)+3]=(unsigned char)autoejecttime;
+	bfr[sizeof(set_mode)+4]=(unsigned char)(autoejecttime>>8);
+
+	if(neosc_pcsc_apdu(ctx,bfr,sizeof(bfr),NULL,NULL,&status)||
+		status!=0x9000)r=-1;
+	else if(neosc_neo_read_status(ctx,&state))r=-1;
+	else if(seq==state.pgmseq)
+	{
+		if(retry--)
+		{
+			usleep(250000);
+			goto repeat;
+		}
+		r=-1;
+	}
+
+	memclear(bfr,0,sizeof(bfr));
+	return r;
+}
+
+int neosc_neo_setmode_mgr(void *ctx,int mode,int crtimeout,int autoejecttime)
+{
+	int r=0;
+	int status;
+	int seq;
+	int retry=1;
+	NEOSC_STATUS state;
+	unsigned char bfr[sizeof(set_mode)+5];
+
+	if(!ctx||(mode&~0x87)||(mode&0x07)==0x07||crtimeout<0||crtimeout>255||
+		autoejecttime<0||autoejecttime>65535)return -1;
+
+repeat:	if(neosc_neo_read_status(ctx,&state))
+	{
+		memclear(bfr,0,sizeof(bfr));
+		return -1;
+	}
+	seq=state.pgmseq;
+
+	memcpy(bfr,set_mode,sizeof(set_mode_mgr));
 	bfr[sizeof(set_mode)]=0x04;
 	bfr[sizeof(set_mode)+1]=(unsigned char)mode;
 	bfr[sizeof(set_mode)+2]=(unsigned char)crtimeout;

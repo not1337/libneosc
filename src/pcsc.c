@@ -1,5 +1,5 @@
 /* 
- * libneosc - an easy access library to the YubiKey NEO(-N)
+ * libneosc - an easy access library to the YubiKey NEO(-N)/4 (nano)
  *
  * Copyright (c) 2015 Andreas Steinmetz, ast@domdv.de
  *
@@ -28,6 +28,11 @@
 
 #define USB 0
 #define NFC 1
+
+/* workaround for yubikey 4 not showing serial in reader list */
+
+#define YUBIKEY4_ID "Yubico Yubikey 4 "
+#define U2F_ID      "U2F"
 
 typedef struct
 {
@@ -59,6 +64,14 @@ static unsigned char neo_atr2[]=
 	0x65,0x79,0x4e,0x45,0x4f,0x72,0x33,0x58
 };
 
+/* Yubikey 4 nano v4.3.5 USB */
+
+static unsigned char yk4_atr1[]=
+{
+	0x3B,0xF8,0x13,0x00,0x00,0x81,0x31,0xFE,0x15,0x59,0x75,
+	0x62,0x69,0x6B,0x65,0x79,0x34,0xD4
+};
+
 static struct
 {
 	unsigned char *atr;
@@ -66,6 +79,7 @@ static struct
 	int type;
 } atrlist[]=
 {
+	{yk4_atr1,sizeof(yk4_atr1),USB},
 	{neo_atr1,sizeof(neo_atr1),USB},
 	{neo_atr2,sizeof(neo_atr2),NFC},
 	{NULL,0,0}
@@ -264,8 +278,9 @@ int neosc_pcsc_open(void **ctx,int serial)
 	LIST *list;
 	char txt[20];
 
-	if(serial<0&&serial!=NEOSC_USB_YUBIKEY&&serial!=NEOSC_NFC_YUBIKEY)
-		return -1;
+	if(serial<0&&serial!=NEOSC_USB_YUBIKEY&&serial!=NEOSC_NFC_YUBIKEY&&
+		serial!=NEOSC_U2F_YUBIKEY4&&serial!=NEOSC_NOU2F_YUBIKEY4)
+			return -1;
 	if(!ctx)return -1;
 
 	if(init_pcsc(ctx))goto err1;
@@ -299,6 +314,32 @@ int neosc_pcsc_open(void **ctx,int serial)
 		for(i=0;i<total;i++)for(j=0;atrlist[j].atr;j++)
 		    if(atrlist[j].type==NFC)if(list[i].atrlen==atrlist[j].len)
 			if(!memcmp(list[i].atr,atrlist[j].atr,atrlist[j].len))
+		{
+			if(connect_pcsc(*ctx,list[i].name))goto err3;
+			free(list);
+			return 0;
+		}
+	}
+	else if(serial==NEOSC_U2F_YUBIKEY4)
+	{
+		for(i=0;i<total;i++)for(j=0;atrlist[j].atr;j++)
+		    if(atrlist[j].type==USB)if(list[i].atrlen==atrlist[j].len)
+			if(!memcmp(list[i].atr,atrlist[j].atr,atrlist[j].len))
+			    if(strstr(list[i].name,YUBIKEY4_ID))
+				if(strstr(list[i].name,U2F_ID))
+		{
+			if(connect_pcsc(*ctx,list[i].name))goto err3;
+			free(list);
+			return 0;
+		}
+	}
+	else if(serial==NEOSC_NOU2F_YUBIKEY4)
+	{
+		for(i=0;i<total;i++)for(j=0;atrlist[j].atr;j++)
+		    if(atrlist[j].type==USB)if(list[i].atrlen==atrlist[j].len)
+			if(!memcmp(list[i].atr,atrlist[j].atr,atrlist[j].len))
+			    if(strstr(list[i].name,YUBIKEY4_ID))
+				if(!strstr(list[i].name,U2F_ID))
 		{
 			if(connect_pcsc(*ctx,list[i].name))goto err3;
 			free(list);

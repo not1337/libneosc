@@ -1,5 +1,5 @@
 /* 
- * libneosc - an easy access library to the YubiKey NEO(-N)
+ * libneosc - an easy access library to the YubiKey NEO(-N)/4 (nano)
  *
  * Copyright (c) 2015 Andreas Steinmetz, ast@domdv.de
  *

@@ -1,5 +1,5 @@
 /* 
- * libneosc - an easy access library to the YubiKey NEO(-N)
+ * libneosc - an easy access library to the YubiKey NEO(-N)/4 (nano)
  *
  * Copyright (c) 2015 Andreas Steinmetz, ast@domdv.de
  *
@@ -281,24 +281,34 @@ int neosc_usb_open(void **handle,int serial,int *mode)
 		if(d.idVendor!=0x1050)continue;
 		switch(d.idProduct)
 		{
+		case 0x0010:
+		case 0x0401:
 		case 0x0110:
 			if(mode)*mode=0;
 			break;
+		case 0x0405:
 		case 0x0111:
 			if(mode)*mode=2;
 			break;
+		case 0x0404:
 		case 0x0112:
 			if(mode)*mode=1;
 			break;
+		case 0x0120:
+		case 0x0402:
 		case 0x0113:
 			if(mode)*mode=3;
 			break;
+		case 0x0410:
+		case 0x0403:
 		case 0x0114:
 			if(mode)*mode=4;
 			break;
+		case 0x0406:
 		case 0x0115:
 			if(mode)*mode=5;
 			break;
+		case 0x0407:
 		case 0x0116:
 			if(mode)*mode=6;
 			break;

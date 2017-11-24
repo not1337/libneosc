@@ -1,5 +1,5 @@
 /* 
- * libneosc - an easy access library to the YubiKey NEO(-N)
+ * libneosc - an easy access library to the YubiKey NEO(-N)/4 (nano)
  *
  * Copyright (c) 2015 Andreas Steinmetz, ast@domdv.de
  *
@@ -32,6 +32,8 @@ extern "C"
 #define NEOSC_ANY_YUBIKEY	0
 #define NEOSC_USB_YUBIKEY	-1
 #define NEOSC_NFC_YUBIKEY	-2
+#define NEOSC_U2F_YUBIKEY4	-3
+#define NEOSC_NOU2F_YUBIKEY4	-4
 
 #define NEOSC_APDU_BUFFER	264
 
@@ -215,6 +217,7 @@ extern int neosc_util_qrurl(char *name,int otpmode,int shamode,int digits,
 	unsigned int counter,unsigned char *secret,int slen,char *out,int olen);
 
 extern int neosc_neo_select(void *ctx,NEOSC_NEO_INFO *info);
+extern int neosc_neo_select_mgr(void *ctx);
 extern int neosc_neo_read_serial(void *ctx,int *serial);
 extern int neosc_neo_read_hmac(void *ctx,int slot,unsigned char *in,int ilen,
 	unsigned char *out,int olen);
@@ -227,6 +230,8 @@ extern int neosc_neo_write_ndef(void *ctx,int slot,char *url,char *txt,
 	char *lang,unsigned char *code,int codelen);
 extern int neosc_neo_write_scanmap(void *ctx,unsigned char *map,int maplen);
 extern int neosc_neo_setmode(void *ctx,int mode,int crtimeout,
+	int autoejecttime);
+extern int neosc_neo_setmode_mgr(void *ctx,int mode,int crtimeout,
 	int autoejecttime);
 extern int neosc_neo_reset(void *ctx,int slot);
 extern int neosc_neo_config(void *ctx,unsigned char *apdu4,int tktflags,
