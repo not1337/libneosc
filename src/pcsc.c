@@ -1,5 +1,5 @@
 /* 
- * libneosc - an easy access library to the YubiKey NEO(-N)/4 (nano)
+ * libneosc - an easy access library to the YubiKey NEO(-N)
  *
  * Copyright (c) 2015 Andreas Steinmetz, ast@domdv.de
  *
@@ -31,8 +31,10 @@
 
 /* workaround for yubikey 4 not showing serial in reader list */
 
-#define YUBIKEY4_ID "Yubico Yubikey 4 "
-#define U2F_ID      "U2F"
+#define YUBIKEY4_ID1 "Yubico Yubikey 4 "
+#define YUBIKEY4_ID2 "Yubico YubiKey "
+#define U2F_ID1     "U2F"
+#define U2F_ID2     "FIDO"
 
 typedef struct
 {
@@ -325,8 +327,10 @@ int neosc_pcsc_open(void **ctx,int serial)
 		for(i=0;i<total;i++)for(j=0;atrlist[j].atr;j++)
 		    if(atrlist[j].type==USB)if(list[i].atrlen==atrlist[j].len)
 			if(!memcmp(list[i].atr,atrlist[j].atr,atrlist[j].len))
-			    if(strstr(list[i].name,YUBIKEY4_ID))
-				if(strstr(list[i].name,U2F_ID))
+			    if(strstr(list[i].name,YUBIKEY4_ID1)||
+				strstr(list[i].name,YUBIKEY4_ID2))
+				    if(strstr(list[i].name,U2F_ID1)||
+					strstr(list[i].name,U2F_ID2))
 		{
 			if(connect_pcsc(*ctx,list[i].name))goto err3;
 			free(list);
@@ -338,8 +342,10 @@ int neosc_pcsc_open(void **ctx,int serial)
 		for(i=0;i<total;i++)for(j=0;atrlist[j].atr;j++)
 		    if(atrlist[j].type==USB)if(list[i].atrlen==atrlist[j].len)
 			if(!memcmp(list[i].atr,atrlist[j].atr,atrlist[j].len))
-			    if(strstr(list[i].name,YUBIKEY4_ID))
-				if(!strstr(list[i].name,U2F_ID))
+			    if(strstr(list[i].name,YUBIKEY4_ID1)||
+				strstr(list[i].name,YUBIKEY4_ID2))
+				    if(!strstr(list[i].name,U2F_ID1)&&
+					!strstr(list[i].name,U2F_ID2))
 		{
 			if(connect_pcsc(*ctx,list[i].name))goto err3;
 			free(list);
